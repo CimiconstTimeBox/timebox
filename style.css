@@ -1,0 +1,922 @@
+/* ==========================================================================
+   EL TIMEBOX — ESTILOS DE LA AGENDA DE PRODUCTIVIDAD (style.css)
+   ========================================================================== */
+
+:root {
+  /* Fuentes */
+  --font-heading: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Transiciones y Bordes */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+/* --- TEMA MODO PAPEL CLARO (PREDETERMINADO) --- */
+body.theme-paper-light {
+  --bg-body: #f3f4f6;           /* Gris cálido tipo escritorio */
+  --paper-bg: #ffffff;          /* Papel blanco premium */
+  --paper-border: #cbd5e1;      /* Borde de papel */
+  --primary: #1e293b;           /* Slate 800 (Tinta principal) */
+  --primary-rgb: 30, 41, 59;
+  --accent: #2563eb;            /* Azul bolígrafo / Acento */
+  --accent-rgb: 37, 99, 235;
+  --text-main: #0f172a;         /* Gris casi negro */
+  --text-muted: #64748b;        /* Gris de boceto */
+  
+  /* Cajas de prioridad */
+  --priority-row-bg: #f8fafc;
+  --priority-border: #cbd5e1;
+  --priority-num-color: #94a3b8;
+  
+  /* Cuadrícula de papel */
+  --grid-dot-color: rgba(148, 163, 184, 0.25);
+  --hover-row: #f8fafc;
+  --shadow-sheet: rgba(15, 23, 42, 0.08);
+  --orb-color-1: rgba(37, 99, 235, 0.05);
+  --orb-color-2: rgba(99, 102, 241, 0.04);
+}
+
+/* --- TEMA MODO CYBER OSCURO --- */
+body.theme-paper-dark {
+  --bg-body: #0b0f19;           /* Azul espacio profundo */
+  --paper-bg: #111827;          /* Slate 900 */
+  --paper-border: #374151;      /* Slate 700 */
+  --primary: #f8fafc;           /* Texto brillante */
+  --primary-rgb: 248, 250, 252;
+  --accent: #3b82f6;            /* Acento brillante */
+  --accent-rgb: 59, 130, 246;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  
+  /* Cajas de prioridad */
+  --priority-row-bg: #1f2937;
+  --priority-border: #374151;
+  --priority-num-color: #6b7280;
+  
+  /* Cuadrícula de papel */
+  --grid-dot-color: rgba(255, 255, 255, 0.08);
+  --hover-row: #1f2937;
+  --shadow-sheet: rgba(0, 0, 0, 0.4);
+  --orb-color-1: rgba(59, 130, 246, 0.08);
+  --orb-color-2: rgba(139, 92, 246, 0.06);
+}
+
+/* --- ESTILOS GENERALES Y RESET --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-body);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 24px 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  transition: background var(--transition-slow), color var(--transition-normal);
+  overflow-x: hidden;
+}
+
+/* --- DECORACIONES DE FONDO (ORBES) --- */
+.bg-orb-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-orb {
+  position: absolute;
+  border-radius: var(--radius-full);
+  filter: blur(120px);
+  opacity: 0.8;
+  transition: background var(--transition-slow);
+}
+
+.orb-left {
+  width: 500px;
+  height: 500px;
+  top: -10%;
+  left: -10%;
+  background: var(--orb-color-1);
+}
+
+.orb-right {
+  width: 500px;
+  height: 500px;
+  bottom: -10%;
+  right: -10%;
+  background: var(--orb-color-2);
+}
+
+/* --- CONTENEDOR DE LA APP --- */
+.app-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1080px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- BARRA DE NAVEGACIÓN SUPERIOR --- */
+.agenda-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--paper-bg);
+  border: 1px solid var(--paper-border);
+  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  box-shadow: 0 4px 20px var(--shadow-sheet);
+  transition: all var(--transition-normal);
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--paper-border);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.nav-btn:hover {
+  background: var(--hover-row);
+  border-color: var(--text-muted);
+}
+
+.nav-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Selector de fecha interactivo */
+.date-selector-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  cursor: pointer;
+  background: var(--hover-row);
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.date-selector-wrapper:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.1);
+}
+
+.calendar-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+}
+
+.date-input-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.display-date-text {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  user-select: none;
+}
+
+/* Botón Cambiar Tema */
+.theme-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--paper-border);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--hover-row);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.theme-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* --- HOJA DE LA AGENDA (PLANNER SHEET) --- */
+.planner-sheet {
+  background: var(--paper-bg);
+  border: 2px solid var(--paper-border);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  box-shadow: 0 12px 40px var(--shadow-sheet);
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 32px 40px; /* row-gap 32px, col-gap 40px */
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+/* Anillo / Agujero de Cuaderno físico (Detalle visual premium) */
+.planner-sheet::before {
+  content: '';
+  position: absolute;
+  top: 195px; /* Start below the brand logo header */
+  left: 428px; /* Centered perfectly in the column gutter */
+  height: calc(100% - 240px); /* Span to the bottom */
+  width: 1px;
+  background: linear-gradient(to bottom, 
+    transparent 0%, 
+    var(--paper-border) 10%, 
+    var(--paper-border) 90%, 
+    transparent 100%
+  );
+  opacity: 0.5;
+}
+
+/* --- COLUMNA IZQUIERDA: Prioridades e Ideas --- */
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Marca / Logotipo The Time Box */
+.brand-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--primary);
+  grid-column: 1 / -1; /* Spans the entire width of the grid */
+}
+
+.brand-logo-img {
+  max-width: 100%;
+  height: auto;
+  max-height: 100px; /* Centered, bold, and larger */
+  object-fit: contain;
+  display: block;
+  transition: transform var(--transition-normal), filter var(--transition-normal);
+}
+
+.brand-logo-img:hover {
+  transform: scale(1.03);
+}
+
+/* Premium Automatic Dark Mode adjustment for the logo image */
+body.theme-paper-dark .brand-logo-img {
+  filter: invert(0.9) hue-rotate(180deg);
+}
+
+/* Título de Secciones */
+.section-heading {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+
+/* PRIORIDADES CLAVE */
+.priorities-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.priority-row {
+  display: flex;
+  align-items: center;
+  background: var(--priority-row-bg);
+  border: 1px solid var(--priority-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.priority-row:focus-within {
+  border-color: var(--accent);
+}
+
+.row-num {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--priority-num-color);
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--priority-border);
+  user-select: none;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.priority-input {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-main);
+  outline: none;
+}
+
+.priority-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.55;
+  font-style: italic;
+}
+
+/* DESCARGA DE IDEAS (BRAIN DUMP) */
+.braindump-section {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.idea-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.idea-form input {
+  flex-grow: 1;
+  background: var(--priority-row-bg);
+  border: 1px solid var(--priority-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-main);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.idea-form input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.1);
+}
+
+.idea-form input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.add-btn {
+  background: var(--accent);
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.add-btn:hover {
+  background: rgba(var(--accent-rgb), 0.85);
+  transform: translateY(-1px);
+}
+
+.add-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Contenedor Cuadriculado Punteado (Dotted Bullet Grid) */
+.dotted-paper-container {
+  height: 440px; /* Perfectly aligned to match the bottom of the hours grid */
+  overflow-y: auto;
+  border: 1.5px solid var(--paper-border);
+  border-radius: var(--radius-md);
+  background-color: var(--paper-bg);
+  background-image: radial-gradient(var(--grid-dot-color) 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+  padding: 16px;
+}
+
+.idea-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Tarjetas de Tarea en Brain Dump */
+.task-card {
+  background: var(--paper-bg);
+  border: 1px solid var(--paper-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  user-select: none;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.task-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.1);
+  background: var(--hover-row);
+}
+
+.task-card.dragging {
+  opacity: 0.4;
+  border-style: dashed;
+  transform: scale(0.98);
+}
+
+.task-text {
+  flex-grow: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.task-card.completed .task-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.delete-task-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.delete-task-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.delete-task-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+.empty-list-notice {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 48px 24px;
+}
+
+.empty-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--accent);
+  opacity: 0.6;
+  margin-bottom: 12px;
+}
+
+.empty-list-notice p {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.empty-list-notice span {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  display: block;
+}
+
+
+/* --- COLUMNA DERECHA: Agenda Horaria --- */
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabecera del Grid */
+.grid-header {
+  display: grid;
+  grid-template-columns: 55px 1fr 1fr;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: 8px;
+}
+
+.hour-label-header {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.time-col-title {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Contenedor Principal de la Grilla */
+.time-grid-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 840px;
+  overflow-y: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--paper-border);
+}
+
+/* Filas Horarias */
+.hour-row {
+  display: grid;
+  grid-template-columns: 55px 1fr 1fr;
+  min-height: 46px;
+  border-bottom: 1px solid var(--paper-border);
+  background: var(--paper-bg);
+}
+
+.hour-row:last-child {
+  border-bottom: none;
+}
+
+/* Caja de Número de Hora */
+.hour-label {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.01);
+  user-select: none;
+  border-right: 1px solid var(--paper-border);
+}
+
+/* Celdas Receptoras de Tiempo (:00 y :30) */
+.time-cell {
+  position: relative;
+  padding: 3px;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), border var(--transition-fast);
+}
+
+.time-cell:nth-child(2) {
+  border-right: 1px dashed var(--paper-border);
+}
+
+/* Casillero vacío interactivo al pasar ratón */
+.time-cell::before {
+  content: '+';
+  position: absolute;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+}
+
+.time-cell:hover::before {
+  opacity: 0.15;
+}
+
+/* Resaltado cuando una tarea se arrastra encima (Drag Over) */
+.time-cell.drag-over {
+  background-color: rgba(var(--accent-rgb), 0.08) !important;
+  border: 2px dashed var(--accent) !important;
+  z-index: 10;
+}
+
+/* --- TARJETAS COLOCADAS EN LA AGENDA (TIMEBOXES) --- */
+.scheduled-task {
+  width: 100%;
+  height: 100%;
+  background: rgba(var(--accent-rgb), 0.06);
+  border: 1.5px solid rgba(var(--accent-rgb), 0.15);
+  border-left: 4.5px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+  user-select: none;
+  animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.scheduled-task:hover {
+  background: rgba(var(--accent-rgb), 0.1);
+  border-color: var(--accent);
+}
+
+.scheduled-task.dragging {
+  opacity: 0.3;
+}
+
+.sched-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+.sched-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.scheduled-task:hover .sched-actions {
+  opacity: 1;
+}
+
+.sched-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.sched-btn:hover {
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.sched-btn.btn-remove-sched:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.sched-btn svg {
+  width: 11px;
+  height: 11px;
+}
+
+
+/* --- INSTRUCCIONES FLOTANTES INFERIORES --- */
+.quick-instructions {
+  background: var(--paper-bg);
+  border: 1px solid var(--paper-border);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  box-shadow: 0 4px 15px var(--shadow-sheet);
+  display: flex;
+  align-items: center;
+}
+
+.quick-instructions p {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.quick-instructions svg {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+
+/* --- ANIMACIONES --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+
+/* --- ADAPTACIÓN RESPONSIVA (MEDIA QUERIES) --- */
+
+/* Pantallas Medianas (Tablets) */
+@media (max-width: 900px) {
+  .planner-sheet {
+    grid-template-columns: 1fr;
+    padding: 30px;
+    gap: 30px;
+  }
+
+  .planner-sheet::before {
+    display: none;
+  }
+}
+
+/* Pantallas Pequeñas (Móviles) */
+@media (max-width: 600px) {
+  body {
+    padding: 10px 0;
+  }
+
+  .app-container {
+    padding: 0 10px;
+    gap: 12px;
+  }
+
+  .agenda-nav-bar {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .date-selector-wrapper {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .planner-sheet {
+    padding: 20px 16px;
+    min-height: auto;
+  }
+
+  .brand-container {
+    justify-content: center;
+  }
+
+  .dotted-paper-container {
+    min-height: 250px;
+  }
+
+  .grid-header {
+    grid-template-columns: 45px 1fr 1fr;
+  }
+
+  .time-grid-container {
+    max-height: 600px;
+  }
+
+  .hour-row {
+    grid-template-columns: 45px 1fr 1fr;
+  }
+
+  .hour-label {
+    font-size: 0.85rem;
+  }
+
+  .scheduled-task {
+    padding: 4px 6px;
+    font-size: 0.72rem;
+  }
+}
+
+/* --- ESTILOS ADICIONALES: ARRASTRE A PRIORIDADES Y DURACIÓN DE BLOQUES --- */
+
+/* Resaltado de arrastre en prioridades */
+.priority-row.drag-over {
+  border-color: var(--accent) !important;
+  background-color: rgba(var(--accent-rgb), 0.08) !important;
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.15) !important;
+}
+
+/* Indicador de duración en tarjeta agendada */
+.sched-duration {
+  font-size: 0.65rem;
+  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  margin-right: 6px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Bloques de extensión de horario */
+.extension-block {
+  width: 100%;
+  height: 100%;
+  background: rgba(var(--accent-rgb), 0.03);
+  border: 1px dashed rgba(var(--accent-rgb), 0.12);
+  border-left: 4.5px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  user-select: none;
+  cursor: default;
+  animation: scaleIn 0.2s ease-out;
+  position: relative;
+}
+
+.extension-block::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4.5px;
+  width: 4.5px;
+  height: 8px;
+  background: var(--accent);
+  z-index: 5;
+}
+
+/* --- SOPORTE Y OPTIMIZACIONES PARA PANTALLAS TÁCTILES (MÓVILES/TABLETS) --- */
+.task-card, .scheduled-task {
+  touch-action: none; /* Previene el scroll del sistema para iniciar el arrastre táctil de inmediato */
+  -webkit-user-drag: element;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.nav-btn, .theme-toggle-btn, .delete-task-btn, .sched-btn {
+  touch-action: manipulation;
+}

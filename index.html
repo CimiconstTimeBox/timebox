@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Timebox — Agenda de Productividad Interactiva</title>
+  <meta name="description" content="Una recreación digital interactiva del famoso diario Timebox. Organiza tus prioridades del día, descarga tus ideas en la lista de tareas y planifica tu agenda bloque a bloque arrastrando elementos.">
+  
+  <!-- Google Fonts: Outfit (headings) & Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Mobile Drag and Drop Polyfill for touch support (iPhone/iOS & Android) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0/default.css">
+  <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0/scroll-behaviour.min.js"></script>
+  
+  <!-- Estilos locales -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-paper-light">
+
+  <!-- Background Orbs (Premium visual detail) -->
+  <div class="bg-orb-container" aria-hidden="true">
+    <div class="bg-orb orb-left"></div>
+    <div class="bg-orb orb-right"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Top Action bar: Navigation between days, Dark Mode toggle -->
+    <header class="agenda-nav-bar">
+      <button id="btn-prev-day" class="nav-btn" title="Día Anterior">
+        <i data-lucide="chevron-left"></i>
+        <span>Anterior</span>
+      </button>
+
+      <div class="date-selector-wrapper">
+        <i data-lucide="calendar" class="calendar-icon"></i>
+        <input type="date" id="date-picker" class="date-input-field">
+        <span id="display-date" class="display-date-text">Cargando fecha...</span>
+      </div>
+
+      <button id="btn-next-day" class="nav-btn" title="Día Siguiente">
+        <span>Siguiente</span>
+        <i data-lucide="chevron-right"></i>
+      </button>
+
+      <div class="header-actions">
+        <button id="btn-toggle-theme" class="theme-toggle-btn" title="Cambiar Tema (Modo Claro/Oscuro)">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon hidden"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- The Planner Page Sheet -->
+    <main class="planner-sheet">
+      <!-- Brand / Logo exactly like the image -->
+      <div class="brand-container">
+        <img src="logocimi.jpg" alt="Cimiconst Timebox Logo" class="brand-logo-img">
+      </div>
+
+      <!-- LEFT COLUMN: Priorities & Brain Dump -->
+      <section class="left-column">
+
+        <!-- Top Priorities Section -->
+        <div class="priorities-section">
+          <h3 class="section-heading">Prioridades Clave</h3>
+          <div class="priorities-container">
+            <div class="priority-row">
+              <span class="row-num">1</span>
+              <input type="text" id="priority-1" class="priority-input" placeholder="Primera prioridad del día..." maxlength="80">
+            </div>
+            <div class="priority-row">
+              <span class="row-num">2</span>
+              <input type="text" id="priority-2" class="priority-input" placeholder="Segunda prioridad..." maxlength="80">
+            </div>
+            <div class="priority-row">
+              <span class="row-num">3</span>
+              <input type="text" id="priority-3" class="priority-input" placeholder="Tercera prioridad..." maxlength="80">
+            </div>
+          </div>
+        </div>
+
+        <!-- Brain Dump Section -->
+        <div class="braindump-section">
+          <h3 class="section-heading">Descarga de Ideas (Brain Dump)</h3>
+          
+          <form id="add-idea-form" class="idea-form">
+            <input type="text" id="idea-input" placeholder="Añadir una idea, nota o tarea..." required maxlength="60">
+            <button type="submit" class="add-btn" title="Añadir Tarea">
+              <i data-lucide="plus"></i>
+            </button>
+          </form>
+
+          <!-- Dotted paper task list -->
+          <div class="dotted-paper-container">
+            <ul id="idea-list" class="idea-list">
+              <!-- Dynamic items go here -->
+              <li class="empty-list-notice">
+                <i data-lucide="sparkles" class="empty-icon"></i>
+                <p>Tu mente está despejada.</p>
+                <span>Escribe tus tareas arriba y arrástralas al horario para estructurar tu día.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Time Grid (Agenda) -->
+      <section class="right-column">
+        <!-- Grid Header -->
+        <div class="grid-header">
+          <div class="hour-label-header">Hora</div>
+          <div class="time-col-title">:00</div>
+          <div class="time-col-title">:30</div>
+        </div>
+
+        <!-- Time Slots Grid Container (7 AM to 9 PM) -->
+        <div class="time-grid-container" id="time-grid">
+          <!-- Rendered dynamically by JavaScript to support flexible hours and drag events -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Floating Help Button / Quick info -->
+    <div class="quick-instructions">
+      <p><i data-lucide="info"></i> <strong>Instrucciones:</strong> Escribe tareas en la lista de ideas de la izquierda, arrástralas y suéltalas en los casilleros del horario de la derecha para bloquear tu tiempo. Puedes arrastrar tareas en el horario para reorganizarlas o hacer doble clic en un casillero para crear una tarea directamente.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Initialise Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
